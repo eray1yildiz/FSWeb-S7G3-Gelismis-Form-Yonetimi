@@ -1,17 +1,13 @@
 import * as Yup from "yup";
 
 export const formSchema = Yup.object().shape({
-  firstName: Yup.string().trim().required("İsminizi giriniz"),
-
-  surname: Yup.string().trim().required("Soy isminizi giriniz"),
-
-  email: Yup.string().email("Mail adresinizi giriniz").required(),
-
+  firstName: Yup.string().trim().required("Lütfen isiminizi giriniz"),
+  surname: Yup.string().trim().required("Lütfen soyisiminizi giriniz"),
+  email: Yup.string().email("Lütfen mail adresinizi giriniz").required(),
   password: Yup.string()
-    .required("Şifrenizi giriniz")
-    .min(4, "şifre en az 4 karakter olmalı"),
-
+    .required("Lütfen şifrenizi giriniz")
+    .min(5, "Şifreniz en az 5 karakterden oluşmalıdır"),
   terms: Yup.boolean()
-    .oneOf([true], "Kullanım şartlarını onaylayın")
+    .oneOf([true], "Kullanım şartlarını onaylamalısınız")
     .required(),
 });

@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import * as Yup from "yup";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Label, FormFeedback, Input, FormGroup } from "reactstrap";
+import { Button, Label, FormFeedback, Input, FormGroup } from "reactstrap";
 import { formSchema } from "../validation/Yup";
 
 const Form = () => {
   const [user, setUser] = useState({
     firstName: "",
-    surname: "",
+    surName: "",
     email: "",
     password: "",
     terms: false,
   });
-
-  const [kullanicilar, setKullanicilar] = useState([]);
 
   const [userError, setUserError] = useState({
     firstName: "",
@@ -23,6 +21,8 @@ const Form = () => {
     password: "",
     terms: "",
   });
+
+  const [users, setUsers] = useState([]);
 
   const [valid, setValid] = useState([]);
 
@@ -36,21 +36,17 @@ const Form = () => {
   const submitHandler = e => {
     e.preventDefault();
     if (valid) {
-      axios.post("https://reqres.in/api/users", user).then(res => {
-        setKullanicilar([...kullanicilar, res.data]);
-      });
+      axios
+        .post("https://reqres.in/api/users", user)
+        .then(res => setUsers([...users, res.data]));
     }
   };
 
   const validation = (name, value) => {
     Yup.reach(formSchema, name)
       .validate(value)
-      .then(() => {
-        setUserError({ ...userError, [name]: "" });
-      })
-      .catch(err => {
-        setUserError({ ...userError, [name]: err.errors[0] });
-      });
+      .then(() => setUserError({ ...userError, [name]: "" }))
+      .catch(err => setUserError({ ...userError, [name]: err.errors[0] }));
     setUser({ ...user, [name]: value });
   };
 
@@ -69,7 +65,7 @@ const Form = () => {
     <div>
       <form onSubmit={submitHandler}>
         <FormGroup>
-          <Label for="name">İsim: </Label>
+          <Label for="name">Kullanıcı Adı: </Label>
           <Input
             id="name"
             type="text"
@@ -77,12 +73,12 @@ const Form = () => {
             onChange={changeHandler}
             value={user.firstName}
             invalid={!!userError.firstName}
-            placeholder="isminizi giriniz"
+            placeholder="adınızı giriniz"
           />
           <FormFeedback>{userError.firstName}</FormFeedback>
         </FormGroup>
         <FormGroup>
-          <Label for="surname">Soyisim: </Label>
+          <Label for="surname">Kullanıcı Soyadı: </Label>
           <Input
             id="surname"
             type="text"
@@ -90,12 +86,12 @@ const Form = () => {
             onChange={changeHandler}
             value={user.surname}
             invalid={!!userError.surname}
-            placeholder="soyisminizi giriniz"
+            placeholder="soyadınızı giriniz"
           />
           <FormFeedback>{userError.surname}</FormFeedback>
         </FormGroup>
         <FormGroup>
-          <Label for="mail">Email: </Label>
+          <Label for="mail">Kullanıcı Mail Adresi: </Label>
           <Input
             id="mail"
             type="email"
@@ -108,7 +104,7 @@ const Form = () => {
           <FormFeedback>{userError.email}</FormFeedback>
         </FormGroup>
         <FormGroup>
-          <Label for="password">Şifre: </Label>
+          <Label for="password">Kullanıcı Şifresi: </Label>
           <Input
             id="password"
             type="password"
@@ -121,7 +117,8 @@ const Form = () => {
           <FormFeedback>{userError.password}</FormFeedback>
         </FormGroup>
         <FormGroup>
-          <Label for="terms">Kullanım Şartları:</Label>
+          <Label for="terms">Kullanım şartlarını onaylıyor musunuz? </Label>{" "}
+          <br />
           <Input
             id="terms"
             type="checkbox"
@@ -131,13 +128,38 @@ const Form = () => {
           />
           <FormFeedback>{userError.terms}</FormFeedback>
         </FormGroup>
-        <button type="submit" value="submit" disabled={!valid}>
+        <Button
+          data-cy="button"
+          type="submit"
+          disabled={!valid}
+          color="success"
+        >
           Gönder
-        </button>
+        </Button>
       </form>
-      {kullanicilar.map(item => (
-        <p>{item.firstName}</p>
+      <br />
+      <h2 style={{ color: "rgb(255, 0, 0)" }}>Üyeler</h2>
+      <br />
+      {users.map(item => (
+        <div
+          data-cy="yeniUye"
+          style={{
+            border: "2px rgb(255, 0, 0) solid",
+            width: "60vh",
+            margin: "auto",
+          }}
+        >
+          <p>
+            <span style={{ fontWeight: "bold" }}>Üye Ad-Soyad:</span>{" "}
+            {item.firstName} {item.surname}
+          </p>
+          <p>
+            <span style={{ fontWeight: "bold" }}>Üye Mail Adresi</span>{" "}
+            {item.email}
+          </p>
+        </div>
       ))}
+      <br />
     </div>
   );
 };
